@@ -1,0 +1,76 @@
+<ion-row *ngIf="!preview">
+  <ion-col class="question" size="10">
+    <ion-item lines="none"
+      ><ion-input
+        placeholder="Fragetext"
+        [(ngModel)]="task.data.question"
+      ></ion-input>
+    </ion-item>
+
+    <ion-chip
+      *ngFor="let choice of task.data.choices; let i = index"
+      (click)="deleteChoice(i)"
+    >
+      <ion-label>{{ choice }}</ion-label>
+    </ion-chip>
+    <ion-item>
+      <ion-input
+        slot="start"
+        placeholder="neue Antwort"
+        [(ngModel)]="newChoice"
+      >
+      </ion-input>
+      <ion-button slot="start" fill="clear" (click)="addChoice(newChoice)">
+        <ion-label>
+          <ion-icon name="add-circle-outline"> </ion-icon>
+        </ion-label>
+      </ion-button>
+    </ion-item>
+    <ion-textarea
+      *ngIf="helpertextAdded"
+      [(ngModel)]="task.data.helpertext"
+      placeholder="hier Helfertext eingeben ..."
+    ></ion-textarea>
+  </ion-col>
+  <ion-col size="2">
+    <ion-list lines="none">
+      <ion-item>
+        <ion-button
+          fill="outline"
+          color="danger"
+          (click)="deleteQuestionMultipleOne()"
+          >löschen</ion-button
+        >
+      </ion-item>
+      <ion-item *ngIf="!helpertextAdded">
+        <ion-button fill="outline" color="secondary" (click)="addHelpertext()"
+          ><ion-label>Helfertext hinzufügen</ion-label></ion-button
+        >
+      </ion-item>
+      <ion-item *ngIf="helpertextAdded">
+        <ion-button
+          fill="outline"
+          color="secondary"
+          (click)="removeHelpertext()"
+          ><ion-label> Helfertext entfernen</ion-label></ion-button
+        >
+      </ion-item>
+    </ion-list>
+  </ion-col>
+</ion-row>
+
+<ion-row *ngIf="preview">
+  <ion-list>
+    <ion-item lines="none">
+      <ion-label>
+        {{ task.data.question }}
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Einfachauswahl:</ion-label>
+      <ion-chip *ngFor="let choice of task.data.choices">
+        <ion-label>{{ choice }}</ion-label>
+      </ion-chip>
+    </ion-item>
+  </ion-list>
+</ion-row>

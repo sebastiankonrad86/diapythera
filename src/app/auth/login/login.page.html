@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form class="login-input" (ngSubmit)="login()" [formGroup]="credentials">
+    <ion-item fill="solid" class="ion-margin-bottom">
+      <ion-input
+        type="email"
+        placeholder="Email"
+        formControlName="email"
+      ></ion-input>
+      <ion-note
+        slot="error"
+        *ngIf="(email.dirty || email.touched) && email.errors"
+        >Bitte geben Sie eine korrekte E-Mail Adresse ein!</ion-note
+      >
+    </ion-item>
+    <ion-item fill="solid" class="ion-margin-bottom">
+      <ion-input
+        type="password"
+        placeholder="Password"
+        formControlName="password"
+      ></ion-input>
+      <ion-note
+        slot="error"
+        *ngIf="(password.dirty || password.touched) && password.errors"
+        >Das Passwort muss mindestens 6 Zeichen lang sein!</ion-note
+      >
+    </ion-item>
+
+    <ion-button color="secondary" type="submit" expand="block" [disabled]="!credentials.valid"
+      >Login</ion-button
+    >
+    <ion-button expand="block" [routerLink]="['/registration']"
+      >Noch keinen Account? Zur Registrierung</ion-button
+    >
+    <ion-button color="tertiary"  class="ion-text-center login-input" expand="block"  (click)="forgotPassword()"
+    ><ion-label>Passwort vergessen?</ion-label></ion-button>
+
+  </form>
+</ion-content>

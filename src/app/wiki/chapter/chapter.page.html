@@ -1,0 +1,37 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{selectedChapter.title}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-item class="bg-trans">
+        <ion-label *ngIf="!setEdit">Edit</ion-label>
+        <ion-label *ngIf="setEdit">Save</ion-label>
+        <ion-toggle slot="end" (ionChange)="toggleEdit()"></ion-toggle>
+      </ion-item>
+    </ion-buttons>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-reorder-group [disabled]="!setEdit"(ionItemReorder)="reorderItems($any($event))" disabled="false">
+        <ion-item *ngFor="let sheet of sheets | async; let i=index">
+          <ion-reorder slot="start">
+          <ion-icon
+            name="swap-vertical-outline"
+          ></ion-icon>
+          </ion-reorder>
+          <ion-input color="primary" *ngIf="setEdit" [(ngModel)]="sheet.title" (ionInput)="setChanges(true)">
+            </ion-input>
+            <ion-label *ngIf="!setEdit">{{sheet.title}}</ion-label>
+            <ion-icon *ngIf="!setEdit" slot="end" (click)="openSheet(sheet)" name="arrow-forward-outline"></ion-icon>
+            <ion-icon *ngIf="setEdit" slot="end" (click)="deleteSheet(sheet, i)" name="trash-outline"></ion-icon>
+
+    </ion-item>
+    </ion-reorder-group>
+  </ion-list>
+      <ion-button *ngIf="setEdit" (click)="newSheet()">neues Arbeitsblatt</ion-button>
+</ion-content>

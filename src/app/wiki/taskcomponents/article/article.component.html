@@ -1,0 +1,50 @@
+<div>
+  <ion-row *ngIf="!preview">
+    <ion-col size="10" class="article">
+      <quill-editor
+        placeholder="hier Text eingeben ..."
+        [styles]="{ height: 'auto' }"
+        [(ngModel)]="task.data.text"
+        [modules]="quillConfiguration"
+        [sanitize]="true"
+      ></quill-editor>
+      <ion-textarea
+        *ngIf="helpertextAdded"
+        [(ngModel)]="task.data.helpertext"
+        placeholder="hier Helfertext eingeben ..."
+      ></ion-textarea>
+    </ion-col>
+    <ion-col size="2" justify-content-end>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-button fill="outline" color="danger" (click)="deleteArticle()"
+            >löschen</ion-button
+          >
+        </ion-item>
+        <ion-item *ngIf="!helpertextAdded">
+          <ion-button fill="outline" color="secondary" (click)="addHelpertext()"
+            ><ion-label>Helfertext hinzufügen</ion-label></ion-button
+          >
+        </ion-item>
+        <ion-item *ngIf="helpertextAdded">
+          <ion-button
+            fill="outline"
+            color="secondary"
+            (click)="removeHelpertext()"
+            ><ion-label> Helfertext entfernen</ion-label></ion-button
+          >
+        </ion-item>
+      </ion-list>
+    </ion-col>
+  </ion-row>
+</div>
+
+<!-- <ion-icon name="trash-outline"></ion-icon> -->
+
+<ion-row *ngIf="preview">
+  <quill-view
+    [content]="task.data.text"
+    format="html"
+    theme="snow"
+  ></quill-view>
+</ion-row>

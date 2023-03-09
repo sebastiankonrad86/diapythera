@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Verify Email</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item fill="solid" class="ion-margin-bottom bg-trans" lines="none"
+    ><ion-label class="ion-text-wrap"
+      >Du hast eine E-Mail bekommen. Zur Verifizierung klicke bitte auf den Link
+      in der E-Mail. Gehe dann zum Login
+    </ion-label></ion-item
+  >
+  <ion-item fill="solid" class="ion-margin-bottom bg-trans" lines="none"
+    ><ion-label
+      >Solltest du keine E-Mail bekommen, kannst du eine neue
+      anfordern:</ion-label
+    ></ion-item
+  >
+  <ion-button expand="block" (click)="authService.sendVerificationMail()">
+    Resend Verification E-Mail</ion-button
+  >
+  <ion-button expand="block" (click)="toLogin()"> Login</ion-button>
+</ion-content>
