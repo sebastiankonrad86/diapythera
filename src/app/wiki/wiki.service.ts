@@ -1,25 +1,30 @@
-import { Sheet } from './classes/sheet';
-import { Observable } from 'rxjs';
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable object-shorthand */
+import { QuestionMultipleOneComponent } from './taskcomponents/question-multiple-one/question-multiple-one.component';
+import { QuestionMultipleComponent } from './taskcomponents/question-multiple/question-multiple.component';
+import { QuestionSimpleComponent } from './taskcomponents/question-simple/question-simple.component';
+import { ArticleComponent } from './taskcomponents/article/article.component';
+import { QuestionMultipleOne } from './classes/questionMultipleOne';
+import { QuestionMultiple } from './classes/questionMultiple';
+import { QuestionSimple } from './classes/questionSimple';
+import { Sheet } from './classes/sheet';
 import { DataService } from './../data/data.service';
 import { LoadingController } from '@ionic/angular';
 import { AuthService } from './../auth/auth.service';
 import { Injectable } from '@angular/core';
 import { Book } from './classes/book';
 import { Chapter } from './classes/chapter';
-import { Article } from './classes/article';
 import { docData, addDoc, updateDoc, Firestore } from '@angular/fire/firestore';
 import {
   collection,
   doc,
   getDocs,
-  setDoc,
-  serverTimestamp,
   query,
   orderBy,
   deleteDoc,
-  getDoc,
 } from 'firebase/firestore';
+import { Article } from './classes/article';
+import { Task } from './taskcomponents/task/task';
 
 @Injectable({
   providedIn: 'root',
@@ -30,16 +35,29 @@ export class WikiService {
   public selectedChapter: Chapter;
   public selectedSheet: Sheet;
 
-
-
   constructor(
     private authService: AuthService,
     private firestore: Firestore,
     private loadingController: LoadingController,
-    private data: DataService
   ) {}
 
   /* BOOK *************************************/
+
+  async getAllBooks() {
+    const ref = collection(
+      this.firestore,
+      'therapists',
+      this.authService.getCurrentUser().uid,
+      'books'
+    );
+
+    const b: Book[] = [];
+    (await getDocs(ref)).forEach(doc=>{
+      b.push(new Book(doc.id,doc.data().orderId, doc.data().title));
+    });
+
+    return this.sortByOrderId(b);
+  }
 
   async addNewBook(book: Book) {
     const ref = collection(
@@ -86,7 +104,7 @@ export class WikiService {
       this.firestore,
       'therapists',
       this.authService.getCurrentUser().uid,
-      'wikibooks',
+      'books',
       book.id
     );
 
@@ -94,6 +112,24 @@ export class WikiService {
   }
 
   /* CHAPTER *************************************/
+
+  async getAllChapters() {
+    const ref = query(
+      collection(
+        this.firestore,
+        'therapists',
+        this.authService.getCurrentUser().uid,
+        'chapters'
+      )
+    );
+
+    const c: Chapter[] = [];
+    (await getDocs(ref)).forEach(doc=>{
+      c.push(new Chapter(doc.id,doc.data().bookId, doc.data().orderId, doc.data().title));
+    });
+
+    return this.sortByOrderId(c);
+  }
 
   async addNewChapter(chapter: Chapter) {
     const ref = collection(
@@ -176,6 +212,24 @@ export class WikiService {
 
   /* Sheets **************************************/
 
+  async getAllSheets() {
+    const ref = query(
+      collection(
+        this.firestore,
+        'therapists',
+        this.authService.getCurrentUser().uid,
+        'sheets'
+      )
+    );
+
+    const s: Sheet[] = [];
+    (await getDocs(ref)).forEach(doc=>{
+      s.push(new Sheet(doc.id,doc.data().chapterId, doc.data().orderId, doc.data().title));
+    });
+
+    return this.sortByOrderId(s);
+  }
+
   async addNewSheet(sheet: Sheet) {
     const ref = collection(
       this.firestore,
@@ -209,67 +263,110 @@ export class WikiService {
     });
   }
 
-  /* ARTICLE *************************************/
+  /* TASKS */
 
-  async getAllArticles() {
+  async getAllTasks() {
     const ref = query(
       collection(
         this.firestore,
         'therapists',
         this.authService.getCurrentUser().uid,
-        'wikiarticles'
-      ),
-      orderBy('orderId')
+        'tasks'
+      )
     );
 
-    const result: Article[] = [];
-
-    const docs = await getDocs(ref);
-    docs.forEach((document) => {
-      result.push(
-        new Article(
-          document.data().title,
-          document.data().text,
-          document.data().id,
-          document.data().chapterId,
-          document.data().orderId
-        )
-      );
-    });
-
-    return result;
-  }
-
-  async getArticles(chapterId: string) {
-    const ref = query(
-      collection(
-        this.firestore,
-        'therapists',
-        this.authService.getCurrentUser().uid,
-        'wikiarticles'
-      ),
-      orderBy('orderId')
-    );
-
-    const result = [];
-
-    const docs = await getDocs(ref);
-    docs.forEach((document) => {
-      if (document.data().chapterId === chapterId) {
-        result.push(
-          new Article(
-            document.data().title,
-            document.data().text,
-            document.data().id,
-            document.data().chapterId,
-            document.data().orderId
-          )
+    const result: Task[] =[];
+    (await getDocs(ref)).forEach(doc=>{
+      if (doc.data().component === 'ArticleComponent') {
+        const a = new Article(
+          this.getComponentFromString(doc.data().component),
+          doc.id,
+          doc.data().sheetId,
+          doc.data().orderId,
+          { text: doc.data().text, helpertext: doc.data().helpertext, showHelpertext: doc.data().showHelpertext }
         );
+        result.push(a);
       }
+
+      if (doc.data().component === 'QuestionSimpleComponent') {
+        const a = new QuestionSimple(
+          this.getComponentFromString(doc.data().component),
+          doc.id,
+          doc.data().sheetId,
+          doc.data().orderId,
+          { question: doc.data().question,
+            helpertext: doc.data().helpertext,
+            showHelpertext: doc.data().showHelpertext
+          }
+        );
+        result.push(a);
+      }
+
+      if (doc.data().component === 'QuestionMultipleComponent') {
+        const a = new QuestionMultiple(
+          this.getComponentFromString(doc.data().component),
+          doc.id,
+          doc.data().sheetId,
+          doc.data().orderId,
+          {
+            question: doc.data().question,
+            choices: doc.data().choices,
+            helpertext: doc.data().helpertext,
+            showHelpertext: doc.data().showHelpertext
+          }
+        );
+        result.push(a);
+      }
+
+      if (doc.data().component === 'QuestionMultipleOneComponent') {
+        const a = new QuestionMultipleOne(
+          this.getComponentFromString(doc.data().component),
+          doc.id,
+          doc.data().sheetId,
+          doc.data().orderId,
+          {
+            question: doc.data().question,
+            choices: doc.data().choices,
+            helpertext: doc.data().helpertext,
+            showHelpertext: doc.data().showHelpertext
+          }
+        );
+        result.push(a);
+      }
+
+
     });
 
-    return result;
+    return this.sortByOrderId(result);
+
   }
+
+  updateTask(task: Task){
+    switch(task.component){
+      case ArticleComponent: this.updateArticle(task);
+      break;
+      case QuestionSimpleComponent: this.updateQuestionSimple(task);
+      break;
+      case QuestionMultipleComponent: this.updateQuestionMultiple(task);
+      break;
+      case QuestionMultipleOneComponent: this.updateQuestionMultipleOne(task);
+      break;
+      default: console.log('Task nicht bekannt');
+    }
+  }
+
+  deleteTask(task: Task){
+    const ref = doc(
+      this.firestore,
+      'therapists',
+      this.authService.getCurrentUser().uid,
+      'tasks',
+      task.id
+    );
+    deleteDoc(ref);
+  }
+
+  /* ARTICLE *************************************/
 
   addNewArticle(article: Article) {
     const ref = collection(
@@ -280,10 +377,11 @@ export class WikiService {
     );
     return addDoc(ref, {
       orderId: article.orderId,
-      text: article.data,
-      helpertext: '',
       sheetId: article.sheetId,
-      component: article.component.toString(),
+      text: article.data.text,
+      helpertext: '',
+      showHelpertext: article.data.showHelpertext ,
+      component: 'ArticleComponent',
     });
   }
 
@@ -292,26 +390,204 @@ export class WikiService {
       this.firestore,
       'therapists',
       this.authService.getCurrentUser().uid,
-      'wikiarticles',
+      'tasks',
       article.id
     );
 
     await updateDoc(ref, {
-      text: article.data.text,
-      id: article.id,
-      chapterId: article.sheetId,
       orderId: article.orderId,
+      sheetId: article.sheetId,
+      text: article.data.text,
+      helpertext: article.data.helpertext,
+      showHelpertext: article.data.showHelpertext ,
     });
   }
 
-  async deleteArticle(article: Article) {
+  async deleteArticle(id: string) {
     const ref = doc(
       this.firestore,
       'therapists',
       this.authService.getCurrentUser().uid,
-      'wikiarticles',
-      article.id
+      'tasks',
+      id
     );
     await deleteDoc(ref);
   }
+
+  /* Question Simple */
+
+  addNewQuestionSimple(questionSimple: QuestionSimple) {
+    const ref = collection(
+      this.firestore,
+      'therapists',
+      this.authService.getCurrentUser().uid,
+      'tasks'
+    );
+    return addDoc(ref, {
+      orderId: questionSimple.orderId,
+      sheetId: questionSimple.sheetId,
+      question: questionSimple.data.question,
+      helpertext: '',
+      showHelpertext: questionSimple.data.showHelpertext ,
+      component: 'QuestionSimpleComponent',
+    });
+  }
+
+  updateQuestionSimple(questionSimple: QuestionSimple) {
+    const ref = doc(
+      this.firestore,
+      'therapists',
+      this.authService.getCurrentUser().uid,
+      'tasks',
+      questionSimple.id
+    );
+
+    updateDoc(ref, {
+      orderId: questionSimple.orderId,
+      sheetId: questionSimple.sheetId,
+      question: questionSimple.data.question,
+      helpertext: questionSimple.data.helpertext,
+      showHelpertext: questionSimple.data.showHelpertext ,
+    });
+  }
+
+  deleteQuestionSimple(id: string) {
+    const ref = deleteDoc(
+      doc(
+        this.firestore,
+        'therapists',
+        this.authService.getCurrentUser().uid,
+        'tasks',
+        id
+      )
+    );
+  }
+
+  addNewQuestionMultiple(questionMultiple: QuestionMultiple) {
+    const ref = collection(
+      this.firestore,
+      'therapists',
+      this.authService.getCurrentUser().uid,
+      'tasks'
+    );
+   return addDoc(ref, {
+      orderId: questionMultiple.orderId,
+      sheetId: questionMultiple.sheetId,
+      question: questionMultiple.data.question,
+      choices: questionMultiple.data.choices,
+      helpertext: '',
+      showHelpertext: questionMultiple.data.showHelpertext ,
+      component: 'QuestionMultipleComponent',
+    });
+  }
+
+  updateQuestionMultiple(questionMultiple: QuestionMultiple) {
+    const ref = doc(
+      this.firestore,
+      'therapists',
+      this.authService.getCurrentUser().uid,
+      'tasks',
+      questionMultiple.id
+    );
+
+    updateDoc(ref, {
+      orderId: questionMultiple.orderId,
+      sheetId: questionMultiple.sheetId,
+      question: questionMultiple.data.question,
+      choices: questionMultiple.data.choices,
+      helpertext: questionMultiple.data.helpertext,
+      showHelpertext: questionMultiple.data.showHelpertext ,
+    });
+  }
+
+  deleteQuestionMultiple(id: string) {
+    const ref = deleteDoc(
+      doc(
+        this.firestore,
+        'therapists',
+        this.authService.getCurrentUser().uid,
+        'tasks',
+        id
+      )
+    );
+  }
+
+  addNewQuestionMultipleOne(questionMultipleOne: QuestionMultipleOne) {
+    const ref = collection(
+      this.firestore,
+      'therapists',
+      this.authService.getCurrentUser().uid,
+      'tasks'
+    );
+    return addDoc(ref, {
+      orderId: questionMultipleOne.orderId,
+      sheetId: questionMultipleOne.sheetId,
+      question: questionMultipleOne.data.question,
+      choices: questionMultipleOne.data.choices,
+      helpertext: '',
+      component: 'QuestionMultipleOneComponent',
+    });
+  }
+
+  updateQuestionMultipleOne(questionMultipleOne: QuestionMultipleOne) {
+    const ref = doc(
+      this.firestore,
+      'therapists',
+      this.authService.getCurrentUser().uid,
+      'tasks',
+      questionMultipleOne.id
+    );
+
+    updateDoc(ref, {
+      orderId: questionMultipleOne.orderId,
+      sheetId: questionMultipleOne.sheetId,
+      question: questionMultipleOne.data.question,
+      choices: questionMultipleOne.data.choices,
+      helpertext: questionMultipleOne.data.helpertext,
+    });
+  }
+
+  deleteQuestionMultipleOne(id: string) {
+    const ref = deleteDoc(
+      doc(
+        this.firestore,
+        'therapists',
+        this.authService.getCurrentUser().uid,
+        'tasks',
+        id
+      )
+    );
+  }
+
+  getComponentFromString(nameOfComponent: string) {
+    if (nameOfComponent === 'ArticleComponent') {
+      return ArticleComponent;
+    }
+
+    if (nameOfComponent === 'QuestionSimpleComponent') {
+      return QuestionSimpleComponent;
+    }
+    if (nameOfComponent === 'QuestionMultipleComponent') {
+      return QuestionMultipleComponent;
+    }
+
+    if (nameOfComponent === 'QuestionMultipleOneComponent') {
+      return QuestionMultipleOneComponent;
+    }
+
+    return null;
+  }
+
+  sortByOrderId(a: any[]) {
+    const result = a.sort((a, b) => {
+      if (a.orderId > b.orderId) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
+    return result;
+  }
+
 }

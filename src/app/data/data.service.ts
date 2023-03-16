@@ -92,7 +92,6 @@ export class DataService {
     return this.books;
   }
 
-  /* TODO: alles umstellen auf Promise!! */
   async getAllChapters() {
     const ref = query(
       collection(

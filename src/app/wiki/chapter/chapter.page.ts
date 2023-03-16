@@ -28,9 +28,7 @@ export class ChapterPage implements OnInit {
   ngOnInit() {
     this.selectedChapter = this.wikiService.selectedChapter;
     this.data.getAllSheets().then(sheets=>{
-      console.log(sheets);
       const result = sheets.filter((sheet)=>sheet.chapterId === this.selectedChapter.id);
-      console.log(result);
       this.sheets.next(result);
   });
   }
@@ -66,7 +64,6 @@ export class ChapterPage implements OnInit {
     if(this.setEdit){
       this.setEdit = false;
       if(this.changes){
-        console.log('make updates');
         this.sheets.getValue().forEach(sheet=>{
           this.wikiService.updateSheet(sheet);
         });

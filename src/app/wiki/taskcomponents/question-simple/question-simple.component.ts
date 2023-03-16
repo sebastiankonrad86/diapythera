@@ -1,5 +1,5 @@
+import { WikiService } from './../../wiki.service';
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { Subject } from 'rxjs';
 import { LoadingController } from '@ionic/angular';
 import { QuestionSimple } from './../../classes/questionSimple';
 import { DataService } from './../../../data/data.service';
@@ -14,31 +14,20 @@ import { Task } from '../task/task';
 })
 export class QuestionSimpleComponent implements OnInit, TaskComponent {
   @Input() task: Task;
-  @Input() save: Subject<boolean>;
   @Input() preview: boolean = false;
-  helpertextAdded: boolean;
+  changes: boolean = false;
 
-  constructor(
-    private dataService: DataService,
-    private loading: LoadingController
-  ) {}
+  constructor(private wikiService: WikiService) {}
 
   ngOnInit(): void {
-    this.save.subscribe((save) => {
-      if (save === true) {
-        this.updateQuestionSimple();
-      }
-    });
-
-    this.helpertextAdded = this.task.data.helpertext !== '';
   }
 
   deleteQuestionSimple() {
-    this.dataService.deleteQuestionSimple(this.task.id);
+    this.wikiService.deleteQuestionSimple(this.task.id);
   }
 
   updateQuestionSimple() {
-    this.dataService.updateQuestionSimple(
+    this.wikiService.updateQuestionSimple(
       new QuestionSimple(
         this.task.component,
         this.task.id,
@@ -49,13 +38,24 @@ export class QuestionSimpleComponent implements OnInit, TaskComponent {
     );
   }
 
+  save(){
+    this.wikiService.updateQuestionSimple(this.task);
+    this.changes = false;
+  }
+
+  setChanges(){
+    this.changes = true;
+  }
+
   addHelpertext() {
-    this.task.data.helpertext = 'Helfertext hier eingeben';
-    this.helpertextAdded = true;
+    this.changes = true;
+    this.task.data.helpertext = '';
+    this.task.data.showHelpertext = true;
   }
 
   removeHelpertext() {
+    this.changes = true;
     this.task.data.helpertext = '';
-    this.helpertextAdded = false;
+    this.task.data.showHelpertext = false;
   }
 }

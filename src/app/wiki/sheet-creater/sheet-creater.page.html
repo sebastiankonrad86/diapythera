@@ -1,16 +1,11 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>Arbeitsblatt Editor</ion-title>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button color="secondary" (click)="saveChanges()"
-        >Speichern</ion-button
-      >
+      <ion-button color="success" (click)="saveAll()">save all</ion-button>
       <ion-button color="warning" id="open-modal">Vorschau</ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -20,23 +15,45 @@
   <ion-item nolines style="margin: 1rem">
     <ion-label><h1>{{selectedSheet.title}}</h1></ion-label>
   </ion-item>
-
-  <ng-template
-    *ngFor="let task of tasks | async"
-    [ngComponentOutlet]="task.component"
-    [ndcDynamicInputs]="{task: task, save: save}"
-  ></ng-template>
-
-  <ion-button fill="outline" (click)="addText()">neuer Text</ion-button>
-  <ion-button fill="outline" (click)="addQuestionSimple()"
-    >neue einfache Frage</ion-button
-  >
-  <ion-button fill="outline" (click)="addQuestionMultiple()"
-    >neue MC-Frage (Mehrfachauswahl)</ion-button
-  >
-  <ion-button fill="outline" (click)="addQuestionMultipleOne()"
-    >neue MC-Frage (Einfachauswahl)</ion-button
-  >
+  <ion-row>
+    <ion-col size="12">
+      <ion-button size="small" (click)="setOpenButtons(-1)"><ion-icon name="arrow-forward-circle"></ion-icon></ion-button>
+        <ion-button *ngIf="this.openButtons === -1" size="small" fill="outline" (click)="addText(-1)"><ion-icon name="add-outline"></ion-icon> Artikel</ion-button>
+        <ion-button *ngIf="this.openButtons === -1" size="small" fill="outline" (click)="addQuestionSimple(-1)"><ion-icon name="add-outline"></ion-icon>einfache Frage</ion-button>
+        <ion-button *ngIf="this.openButtons === -1" size="small" fill="outline" (click)="addQuestionMultiple(-1)"><ion-icon name="add-outline"></ion-icon>MC-Frage (mehrfach)</ion-button>
+        <ion-button *ngIf="this.openButtons === -1" size="small" fill="outline" (click)="addQuestionMultipleOne(-1)"><ion-icon name="add-outline"></ion-icon>MC-Frage (einfach)</ion-button>
+    </ion-col>
+  </ion-row>
+  <div *ngFor="let task of tasks | async; index as i ">
+    <ion-row>
+      <ion-col size="10">
+        <ng-template class="ion-padding"
+        [ngComponentOutlet]="task.component"
+        [ndcDynamicInputs]="{task: task}"
+      ></ng-template>
+    </ion-col>
+    <ion-col size="2">
+      <ion-col size="2" justify-content-end>
+        <ion-list lines="none">
+          <ion-item>
+            <ion-button fill="outline" color="danger" (click)="deleteTask(task,i)"
+              ><ion-icon name="trash-outline"></ion-icon></ion-button>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+          <ion-button size="small"  (click)="setOpenButtons(i)"><ion-icon name="arrow-forward-circle"></ion-icon></ion-button>
+          <ion-button *ngIf="this.openButtons === i" size="small" fill="outline" (click)="addText(i)"><ion-icon name="add-outline"></ion-icon> Artikel</ion-button>
+          <ion-button *ngIf="this.openButtons === i" size="small" fill="outline" (click)="addQuestionSimple(i)"><ion-icon name="add-outline"></ion-icon>einfache Frage</ion-button>
+          <ion-button *ngIf="this.openButtons === i" size="small" fill="outline" (click)="addQuestionMultiple(i)"><ion-icon name="add-outline"></ion-icon>MC-Frage (mehrfach)</ion-button>
+          <ion-button *ngIf="this.openButtons === i" size="small" fill="outline" (click)="addQuestionMultipleOne(i)"><ion-icon name="add-outline"></ion-icon>MC-Frage (einfach)</ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
+  <div style="height: 100px;"></div>
 
   <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
     <ng-template>
@@ -54,7 +71,7 @@
         <ng-template
           *ngFor="let task of tasks | async"
           [ngComponentOutlet]="task.component"
-          [ndcDynamicInputs]="{data: task.data, preview: true, save: save}"
+          [ndcDynamicInputs]="{task: task, preview: true}"
         ></ng-template>
       </ion-content>
     </ng-template>

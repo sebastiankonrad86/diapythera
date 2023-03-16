@@ -1,14 +1,14 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>{{selectedChapter.title}}</ion-title>
     <ion-buttons slot="end">
-      <ion-item class="bg-trans">
+      <ion-item color="primary">
         <ion-label *ngIf="!setEdit">Edit</ion-label>
         <ion-label *ngIf="setEdit">Save</ion-label>
-        <ion-toggle slot="end" (ionChange)="toggleEdit()"></ion-toggle>
+        <ion-toggle color="secondary" slot="end" (ionChange)="toggleEdit()"></ion-toggle>
       </ion-item>
     </ion-buttons>
   </ion-toolbar>
@@ -17,8 +17,11 @@
 
 <ion-content>
   <ion-list>
+    <ion-list-header>
+      <ion-label><h1>Arbeitsblätter</h1></ion-label>
+    </ion-list-header>
     <ion-reorder-group [disabled]="!setEdit"(ionItemReorder)="reorderItems($any($event))" disabled="false">
-        <ion-item *ngFor="let sheet of sheets | async; let i=index">
+        <ion-item class="sheet" *ngFor="let sheet of sheets | async; let i=index">
           <ion-reorder slot="start">
           <ion-icon
             name="swap-vertical-outline"

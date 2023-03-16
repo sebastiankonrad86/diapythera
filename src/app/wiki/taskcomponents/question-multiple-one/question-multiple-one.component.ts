@@ -1,7 +1,6 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { Subject } from 'rxjs';
-import { DataService } from './../../../data/data.service';
+import { WikiService } from './../../wiki.service';
 import { IonModal } from '@ionic/angular';
 import { TaskComponent } from './../task/task.component';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
@@ -15,27 +14,19 @@ import { QuestionMultipleOne } from '../../classes/questionMultipleOne';
 })
 export class QuestionMultipleOneComponent implements OnInit, TaskComponent {
   @Input() task: Task;
-  @Input() save: Subject<boolean>;
   @Input() preview: boolean = false;
   @ViewChild(IonModal) modal: IonModal;
-  helpertextAdded: boolean;
+  changes: boolean = false;
 
   newChoice: string = '';
 
-  constructor(private dataService: DataService) {}
+  constructor(private wikiService: WikiService) {}
 
   ngOnInit(): void {
-    this.save.subscribe((save) => {
-      if (save === true) {
-        this.updateQuestionMultipleOne();
-      }
-    });
-
-    this.helpertextAdded = this.task.data.helpertext !== '';
   }
 
   updateQuestionMultipleOne() {
-    this.dataService.updateQuestionMultipleOne(
+    this.wikiService.updateQuestionMultipleOne(
       new QuestionMultipleOne(
         this.task.component,
         this.task.id,
@@ -46,28 +37,41 @@ export class QuestionMultipleOneComponent implements OnInit, TaskComponent {
     );
   }
 
+  save(){
+    this.wikiService.updateQuestionMultipleOne(this.task);
+    this.changes = false;
+  }
+
+  setChanges(){
+    this.changes = true;
+  }
+
   deleteQuestionMultipleOne() {
-    this.dataService.deleteQuestionMultipleOne(this.task.id);
+    this.wikiService.deleteQuestionMultipleOne(this.task.id);
   }
 
   addChoice(choice: string) {
+    this.changes = true;
     this.task.data.choices.push(choice);
   }
 
   deleteChoice(i: number) {
+    this.changes = true;
     this.task.data.choices = this.task.data.choices.filter((choice) => {
       return choice !== this.task.data.choices[i];
     });
   }
 
   addHelpertext() {
-    this.task.data.helpertext = 'Helfertext hier eingeben';
-    this.helpertextAdded = true;
+    this.changes = true;
+    this.task.data.helpertext = '';
+    this.task.data.showHelpertext = true;
   }
 
   removeHelpertext() {
+    this.changes = true;
     this.task.data.helpertext = '';
-    this.helpertextAdded = false;
+    this.task.data.showHelpertext = false;
   }
 
   onWillDismiss($event) {

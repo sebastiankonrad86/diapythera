@@ -1,9 +1,10 @@
+import { WikiService } from './../../wiki.service';
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { Subject } from 'rxjs';
 import { DataService } from './../../../data/data.service';
 import { TaskComponent } from './../task/task.component';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 import { Article } from '../../classes/article';
 import { Task } from '../task/task';
 
@@ -14,38 +15,43 @@ import { Task } from '../task/task';
 })
 export class ArticleComponent implements OnInit, TaskComponent {
   @Input() task: Task;
-  @Input() save: Subject<boolean>;
   @Input() preview: boolean = false;
-  helpertextAdded: boolean;
+  changes: boolean = false;
+max: any;
 
-  constructor(private dataService: DataService) {}
+  constructor( private wikiService: WikiService) {}
 
   ngOnInit(): void {
-    this.save.subscribe((save) => {
-      if (save === true) {
-        this.updateArticle();
-      }
-    });
+    console.log(this.task);
+  }
 
-    this.helpertextAdded = this.task.data.helpertext !== '';
+  save(){
+    this.wikiService.updateArticle(this.task);
+    this.changes = false;
+  }
+
+  setChanges(){
+    this.changes = true;
   }
 
   deleteArticle() {
-    this.dataService.deleteArticle(this.task.id);
+    this.wikiService.deleteArticle(this.task.id);
   }
 
   addHelpertext() {
-    this.task.data.helpertext = 'Helfertext hier eingeben';
-    this.helpertextAdded = true;
+    this.changes = true;
+    this.task.data.helpertext = '';
+    this.task.data.showHelpertext = true;
   }
 
   removeHelpertext() {
+    this.changes = true;
     this.task.data.helpertext = '';
-    this.helpertextAdded = false;
+    this.task.data.showHelpertext = false;
   }
 
   updateArticle() {
-    this.dataService.updateArticle(
+    this.wikiService.updateArticle(
       new Article(
         this.task.component,
         this.task.id,
@@ -55,6 +61,8 @@ export class ArticleComponent implements OnInit, TaskComponent {
       )
     );
   }
+
+
 
   quillConfiguration = {
     toolbar: [

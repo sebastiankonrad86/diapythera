@@ -24,3 +24,10 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+/* Quill Editor */
+@import "~quill/dist/quill.snow.css";
+
+.bg-trans{
+  background-color: transparent;
+}

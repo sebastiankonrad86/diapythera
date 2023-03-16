@@ -1,11 +1,14 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+    <ion-menu-button></ion-menu-button>
+  </ion-buttons>
     <ion-title>Wiki</ion-title>
     <ion-buttons slot="end">
-      <ion-item class="bg-trans">
+      <ion-item color="primary">
         <ion-label *ngIf="!setEdit">Edit</ion-label>
         <ion-label *ngIf="setEdit">Save</ion-label>
-        <ion-toggle slot="end" (ionChange)="toggleEdit()"></ion-toggle>
+        <ion-toggle color="secondary" slot="end" (ionChange)="toggleEdit()"></ion-toggle>
       </ion-item>
     </ion-buttons>
   </ion-toolbar>
@@ -14,10 +17,12 @@
 
 <ion-content >
 
-  Erstellte Module
+
   <ion-list>
+    <ion-list-header><ion-label><h1> Erstellte Module</h1></ion-label>
+    </ion-list-header>
     <ion-reorder-group [disabled]="!setEdit"(ionItemReorder)="reorderItems($any($event))" disabled="false">
-        <ion-item *ngFor="let book of books | async; let i=index">
+        <ion-item class="modul" *ngFor="let book of books | async; let i=index">
           <ion-reorder slot="start">
           <ion-icon
             name="swap-vertical-outline"
@@ -25,7 +30,7 @@
           </ion-reorder>
           <ion-input color="primary" *ngIf="setEdit" [(ngModel)]="book.title" (ionInput)="setChanges(true)">
             </ion-input>
-            <ion-label *ngIf="!setEdit">{{book.title}}</ion-label>
+            <ion-label class="ion-text-wrap" *ngIf="!setEdit">{{book.title}}</ion-label>
             <ion-icon *ngIf="!setEdit" slot="end" (click)="openBook(book)" name="arrow-forward-outline"></ion-icon>
             <ion-icon *ngIf="setEdit" slot="end" (click)="deleteBook(book, i)" name="trash-outline"></ion-icon>
 
