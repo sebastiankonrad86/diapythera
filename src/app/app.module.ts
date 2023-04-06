@@ -1,6 +1,6 @@
 import { ResetPasswordPage } from './auth/reset-password/reset-password.page';
 import { InitResetPasswordPage } from './auth/init-reset-password/init-reset-password.page';
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -20,6 +20,7 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { LoginPage } from './auth/login/login.page';
 import { RegistrationPage } from './auth/registration/registration.page';
 import { provideRemoteConfig,getRemoteConfig } from '@angular/fire/remote-config';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [AppComponent, LoginPage, RegistrationPage, InitResetPasswordPage, ResetPasswordPage],
@@ -32,7 +33,13 @@ import { provideRemoteConfig,getRemoteConfig } from '@angular/fire/remote-config
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
-    provideRemoteConfig(() => getRemoteConfig()),],
+    provideRemoteConfig(() => getRemoteConfig()),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
