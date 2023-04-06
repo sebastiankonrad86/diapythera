@@ -23,6 +23,11 @@ export class QuestionMultipleComponent implements OnInit, TaskComponent {
   constructor(private wikiService: WikiService) {}
 
   ngOnInit(): void {
+    this.wikiService.sheetSaved.subscribe(savedChanges=>{
+      if(savedChanges){
+        this.changes = false;
+      }
+    });
   }
 
   updateQuestionMultiple() {
@@ -40,6 +45,10 @@ export class QuestionMultipleComponent implements OnInit, TaskComponent {
   save(){
     this.wikiService.updateQuestionMultiple(this.task);
     this.changes = false;
+  }
+
+  deleteTask(){
+    this.wikiService.taskDeleteRequest.next(this.task);
   }
 
   setChanges(){

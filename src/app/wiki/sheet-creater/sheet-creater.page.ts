@@ -1,3 +1,4 @@
+import { AlertController } from '@ionic/angular';
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { QuestionMultipleOne } from './../classes/questionMultipleOne';
@@ -27,12 +28,17 @@ export class SheetCreaterPage implements OnInit {
 
   constructor(
     private wikiService: WikiService,
+    private alertController: AlertController,
     private loadingController: LoadingController
   ) {}
 
   async ngOnInit() {
     this.selectedSheet = this.wikiService.selectedSheet;
      await this.loadData();
+     this.wikiService.taskDeleteRequest.subscribe(task=>{
+      const i = this.tasks.getValue().findIndex(t=>{t.orderId =task.orderId;});
+      this.deleteTask(task,i);
+     });
   }
 
   async loadData(){
@@ -56,7 +62,8 @@ export class SheetCreaterPage implements OnInit {
     await this.tasks.getValue().forEach(task=>{
       this.wikiService.updateTask(task);
     });
-    await this.stopLoading();
+    await this.stopLoading().then(x=>this.presentAlert());
+    this.wikiService.saveSheet();
   }
 
   async addText(i: number) {
@@ -161,6 +168,15 @@ export class SheetCreaterPage implements OnInit {
 
   confirm() {
     this.modal.dismiss(null, 'cancel');
+  }
+
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      message: 'Änderungen hochgeladen!',
+      buttons: ['OK'],
+    });
+
+    await alert.present();
   }
 
   async startLoading() {

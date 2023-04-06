@@ -1,14 +1,6 @@
-<!-- <ion-item>{{ data.question }}</ion-item>
-<ion-item>{{ data.answers.join(" | ") }}</ion-item>
--->
+<ion-grid>
 <ion-row *ngIf="!preview">
-  <!--
-  <ion-col size="1">
-    <ion-item lines="none"><ion-button (click)="moveUp()" fill="clear"><ion-icon name="chevron-up-circle-outline"></ion-icon></ion-button></ion-item>
-    <ion-item lines="none"><ion-button (click)="moveDown()" fill="clear"><ion-icon name="chevron-down-circle-outline"></ion-icon></ion-button></ion-item>
-  </ion-col>
-  -->
-  <ion-col class="question" size="10"
+  <ion-col class="worksheet-component"
     ><ion-input
       placeholder="Fragetext"
       [(ngModel)]="task.data.question"
@@ -16,28 +8,26 @@
     ></ion-input>
     <ion-input placeholder="Antwortfeld" readonly></ion-input>
     <ion-textarea
+    class="helpertext"
+    [autoGrow]="true"
       *ngIf="task.data.showHelpertext"
       [(ngModel)]="task.data.helpertext"
       placeholder="hier Helfertext eingeben ..."
       (ionInput)="setChanges()"
     ></ion-textarea>
   </ion-col>
-  <ion-col size="2">
-    <ion-list lines="none">
-    <ion-item>
-      <ion-button [disabled]="!changes" (click)="save()">save</ion-button>
-    </ion-item>
-        <ion-item *ngIf="!task.data.showHelpertext">
-          <ion-button fill="outline" color="secondary" (click)="addHelpertext()"
-            ><ion-label>Helper <ion-icon name="add-outline"></ion-icon></ion-label></ion-button>
-        </ion-item>
-        <ion-item *ngIf="task.data.showHelpertext">
-          <ion-button
-            fill="outline"
-            color="secondary"
+  <ion-col size="auto" class="ion-no-padding tool">
+    <ion-list class="ion-no-padding" lines="none">
+      <ion-button expand="block" size="small" color="success" [disabled]="!changes" (click)="save()"><ion-label>save</ion-label> </ion-button>
+          <ion-button *ngIf="!task.data.showHelpertext" expand="block" size="small" color="tertiary" (click)="addHelpertext()"
+            ><ion-icon name="add-outline"></ion-icon><ion-label>Helper</ion-label>
+          </ion-button>
+          <ion-button *ngIf="task.data.showHelpertext" size="small" expand="block"
+          fill="outline"
+            color="tertiary"
             (click)="removeHelpertext()"
-            ><ion-label> Helfertext entfernen</ion-label></ion-button>
-        </ion-item>
+            ><ion-icon name="add-outline"></ion-icon><ion-label>Helper</ion-label></ion-button>
+          <ion-button expand="block" size="small"  (click)="deleteTask()" color="danger"><ion-icon name="trash-outline"></ion-icon></ion-button>
       </ion-list>
   </ion-col>
 </ion-row>
@@ -58,3 +48,4 @@
 </ion-list>
 </ion-col>
 </ion-row>
+</ion-grid>

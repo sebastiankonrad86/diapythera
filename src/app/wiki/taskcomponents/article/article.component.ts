@@ -17,17 +17,24 @@ export class ArticleComponent implements OnInit, TaskComponent {
   @Input() task: Task;
   @Input() preview: boolean = false;
   changes: boolean = false;
-max: any;
 
   constructor( private wikiService: WikiService) {}
 
   ngOnInit(): void {
-    console.log(this.task);
+    this.wikiService.sheetSaved.subscribe(savedChanges=>{
+      if(savedChanges){
+        this.changes = false;
+      }
+    });
   }
 
   save(){
     this.wikiService.updateArticle(this.task);
     this.changes = false;
+  }
+
+  deleteTask(){
+    this.wikiService.taskDeleteRequest.next(this.task);
   }
 
   setChanges(){

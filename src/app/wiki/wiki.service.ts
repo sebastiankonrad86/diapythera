@@ -1,3 +1,4 @@
+import { BehaviorSubject, Subject } from 'rxjs';
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable object-shorthand */
 import { QuestionMultipleOneComponent } from './taskcomponents/question-multiple-one/question-multiple-one.component';
@@ -34,6 +35,9 @@ export class WikiService {
   public selectedBook: Book;
   public selectedChapter: Chapter;
   public selectedSheet: Sheet;
+
+  public sheetSaved: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public taskDeleteRequest: Subject<Task> = new Subject<Task>();
 
   constructor(
     private authService: AuthService,
@@ -557,6 +561,10 @@ export class WikiService {
         id
       )
     );
+  }
+
+  saveSheet(){
+    this.sheetSaved.next(true);
   }
 
   getComponentFromString(nameOfComponent: string) {

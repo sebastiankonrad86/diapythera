@@ -20,6 +20,11 @@ export class QuestionSimpleComponent implements OnInit, TaskComponent {
   constructor(private wikiService: WikiService) {}
 
   ngOnInit(): void {
+    this.wikiService.sheetSaved.subscribe(savedChanges=>{
+      if(savedChanges){
+        this.changes = false;
+      }
+    });
   }
 
   deleteQuestionSimple() {
@@ -41,6 +46,10 @@ export class QuestionSimpleComponent implements OnInit, TaskComponent {
   save(){
     this.wikiService.updateQuestionSimple(this.task);
     this.changes = false;
+  }
+
+  deleteTask(){
+    this.wikiService.taskDeleteRequest.next(this.task);
   }
 
   setChanges(){

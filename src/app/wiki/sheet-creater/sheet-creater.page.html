@@ -17,39 +17,29 @@
   </ion-item>
   <ion-row>
     <ion-col size="12">
-      <ion-button size="small" (click)="setOpenButtons(-1)"><ion-icon name="arrow-forward-circle"></ion-icon></ion-button>
-        <ion-button *ngIf="this.openButtons === -1" size="small" fill="outline" (click)="addText(-1)"><ion-icon name="add-outline"></ion-icon> Artikel</ion-button>
-        <ion-button *ngIf="this.openButtons === -1" size="small" fill="outline" (click)="addQuestionSimple(-1)"><ion-icon name="add-outline"></ion-icon>einfache Frage</ion-button>
-        <ion-button *ngIf="this.openButtons === -1" size="small" fill="outline" (click)="addQuestionMultiple(-1)"><ion-icon name="add-outline"></ion-icon>MC-Frage (mehrfach)</ion-button>
-        <ion-button *ngIf="this.openButtons === -1" size="small" fill="outline" (click)="addQuestionMultipleOne(-1)"><ion-icon name="add-outline"></ion-icon>MC-Frage (einfach)</ion-button>
+      <ion-button color="secondary" fill="clear" (click)="setOpenButtons(-1)"><ion-icon name="arrow-forward-circle"></ion-icon></ion-button>
+        <ion-button color="secondary" *ngIf="this.openButtons === -1" size="small" (click)="addText(-1)"><ion-icon name="add-outline"></ion-icon> <ion-label>Artikel</ion-label> </ion-button>
+        <ion-button color="secondary" *ngIf="this.openButtons === -1" size="small" (click)="addQuestionSimple(-1)"><ion-icon name="add-outline"></ion-icon> <ion-label>einfache Frage</ion-label></ion-button>
+        <ion-button color="secondary" *ngIf="this.openButtons === -1" size="small" (click)="addQuestionMultiple(-1)"><ion-icon name="add-outline"></ion-icon> <ion-label>MC-Frage (mehrfach)</ion-label></ion-button>
+        <ion-button color="secondary" *ngIf="this.openButtons === -1" size="small" (click)="addQuestionMultipleOne(-1)"><ion-icon name="add-outline"></ion-icon> <ion-label>MC-Frage (einfach)</ion-label></ion-button>
     </ion-col>
   </ion-row>
   <div *ngFor="let task of tasks | async; index as i ">
     <ion-row>
-      <ion-col size="10">
+      <ion-col>
         <ng-template class="ion-padding"
         [ngComponentOutlet]="task.component"
         [ndcDynamicInputs]="{task: task}"
       ></ng-template>
     </ion-col>
-    <ion-col size="2">
-      <ion-col size="2" justify-content-end>
-        <ion-list lines="none">
-          <ion-item>
-            <ion-button fill="outline" color="danger" (click)="deleteTask(task,i)"
-              ><ion-icon name="trash-outline"></ion-icon></ion-button>
-          </ion-item>
-        </ion-list>
-      </ion-col>
-    </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-          <ion-button size="small"  (click)="setOpenButtons(i)"><ion-icon name="arrow-forward-circle"></ion-icon></ion-button>
-          <ion-button *ngIf="this.openButtons === i" size="small" fill="outline" (click)="addText(i)"><ion-icon name="add-outline"></ion-icon> Artikel</ion-button>
-          <ion-button *ngIf="this.openButtons === i" size="small" fill="outline" (click)="addQuestionSimple(i)"><ion-icon name="add-outline"></ion-icon>einfache Frage</ion-button>
-          <ion-button *ngIf="this.openButtons === i" size="small" fill="outline" (click)="addQuestionMultiple(i)"><ion-icon name="add-outline"></ion-icon>MC-Frage (mehrfach)</ion-button>
-          <ion-button *ngIf="this.openButtons === i" size="small" fill="outline" (click)="addQuestionMultipleOne(i)"><ion-icon name="add-outline"></ion-icon>MC-Frage (einfach)</ion-button>
+          <ion-button color="secondary" fill="clear" (click)="setOpenButtons(i)"><ion-icon name="arrow-forward-circle"></ion-icon></ion-button>
+          <ion-button color="secondary" *ngIf="this.openButtons === i" size="small" (click)="addText(i)"><ion-icon name="add-outline"></ion-icon> <ion-label>Artikel</ion-label> </ion-button>
+          <ion-button color="secondary" *ngIf="this.openButtons === i" size="small" (click)="addQuestionSimple(i)"><ion-icon name="add-outline"></ion-icon><ion-label>einfache Frage</ion-label></ion-button>
+          <ion-button color="secondary" *ngIf="this.openButtons === i" size="small" (click)="addQuestionMultiple(i)"><ion-icon name="add-outline"></ion-icon><ion-label>MC-Frage (mehrfach)</ion-label></ion-button>
+          <ion-button color="secondary" *ngIf="this.openButtons === i" size="small" (click)="addQuestionMultipleOne(i)"><ion-icon name="add-outline"></ion-icon><ion-label>MC-Frage (einfach)</ion-label></ion-button>
       </ion-col>
     </ion-row>
   </div>
