@@ -19,7 +19,7 @@ import { QuillModule } from 'ngx-quill';
     FormsModule,
     IonicModule,
     WikiPageRoutingModule,
-    QuillModule
+    QuillModule.forRoot(),
   ],
   declarations: [ArticleComponent, QuestionMultipleComponent, QuestionMultipleOneComponent, QuestionSimpleComponent, WikiPage
 ]
