@@ -1,14 +1,16 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
     <ion-menu-button></ion-menu-button>
   </ion-buttons>
     <ion-title>Wiki</ion-title>
+  </ion-toolbar>
+  <ion-toolbar color="light">
     <ion-buttons slot="end">
-      <ion-item color="primary">
+      <ion-item color="light">
         <ion-label *ngIf="!setEdit">Edit</ion-label>
         <ion-label *ngIf="setEdit">Save</ion-label>
-        <ion-toggle color="secondary" slot="end" (ionChange)="toggleEdit()"></ion-toggle>
+        <ion-toggle  color="secondary" slot="end" (ionChange)="toggleEdit()"></ion-toggle>
       </ion-item>
     </ion-buttons>
   </ion-toolbar>

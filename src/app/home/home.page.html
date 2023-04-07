@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar color="primary">
     <ion-buttons>
       <ion-menu-button></ion-menu-button>
@@ -7,12 +7,9 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Infos</ion-title>
-    </ion-toolbar>
-  </ion-header>
 <ion-card>
+  <ion-card-header>  <ion-card-title>Infos</ion-card-title></ion-card-header>
+
   <ion-card-content>
     <ion-list class="ion-no-padding">
       <ion-item color="none" lines="none">Code für Patienten: {{code}}</ion-item>
